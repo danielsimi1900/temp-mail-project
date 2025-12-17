@@ -11,9 +11,7 @@ services:
 
     region: oregon # Matches your database region for lowest latency
 
-    plan: free # Matches your database plan
-
-    pythonVersion: "3.10"
+        plan: free # Matches your database plan
 
     buildCommand: "pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --no-input"
 
