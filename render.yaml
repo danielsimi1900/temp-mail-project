@@ -2,33 +2,49 @@
 # Blueprint for deploying the temporary mail service on Render.
 
 services:
+
   - type: web
+
     name: temp-mail-app
+
     env: python
+
     region: oregon # Matches your database region for lowest latency
+
     plan: free # Matches your database plan
-    pythonVersion: "3.10" # Specify a python version
 
-    build:
-      - command: "pip install -r requirements.txt"
-      - command: "python manage.py collectstatic --no-input" # Collect static files
-      - command: "python manage.py migrate" # Apply database migrations
+    pythonVersion: "3.10"
 
-    start:
-      command: "gunicorn config.wsgi:application"
+    buildCommand: "pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --no-input"
+
+    startCommand: "gunicorn config.wsgi:application"
 
     envVars:
+
       - key: DATABASE_URL
+
         fromDatabase:
+
           name: temp-mail-db # The name of your Render PostgreSQL database
+
           property: externalUrl
+
       - key: REDIS_URL
+
         sync: false # Set this manually in the Render dashboard
+
       - key: DJANGO_SECRET_KEY
+
         generateValue: true # Let Render generate a secure secret key
+
       - key: MAILGUN_API_KEY
+
         sync: false # Set this manually in the Render dashboard
+
       - key: DOMAIN_NAME
+
         sync: false # e.g., temp-mail-app.onrender.com
+
       - key: DEBUG
+
         value: "False"
